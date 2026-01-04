@@ -42,6 +42,7 @@ public class AddAccount {
 			String miauth_url = "https://" + host + "/miauth/" + miauth_id + "?name=" + URLEncoder.encode("PAEA") + "&permission=" + URLEncoder.encode("read:account,read:blocks,write:blocks,read:mutes,write:mutes");
 			System.out.println("MiAuth： " + miauth_url);
 
+			System.out.print("ﾄｰｸﾝ > ");
 			String token = ListenUserInput.listen();
 
 			//MiAuth
@@ -80,8 +81,30 @@ public class AddAccount {
 				LOG(LOG_TYPE.PROCESS_END_FAILED, "");
 				System.out.println("失敗しました...");
 			}
+		} else if (software == Software.Mastodon) {
+			//Mastodon
+			System.out.print("ﾄｰｸﾝ > ");
+			String token = ListenUserInput.listen();
+
+			VerifyToken vt = new VerifyToken(token, software, host);
+			LOG(LOG_TYPE.PROCESS, host + "に照会しています...///");
+			if (vt.verify()) {
+				LOG(LOG_TYPE.PROCESS_END_OK, "");
+				LOG(LOG_TYPE.OK, host + "の" + vt.user_name + "("+vt.user_id+")としてログインしました。");
+
+				SQL.up_run("INSERT INTO `ACCOUNT` (`ID`, `TOKEN`, `HOST`, `SOFTWARE_NAME`, `SOFTWARE_VERSION`) VALUES (?, ?, ?, ?, ?)", new Object[] {
+					UUID.randomUUID().toString(),
+					token,
+					host,
+					Software.Mastodon.name().toUpperCase(),
+					"0"
+				});
+			} else {
+				LOG(LOG_TYPE.PROCESS_END_FAILED, "");
+				System.out.println("失敗しました...");
+			}
 		} else {
-			//TODO: Mastodon
+			throw new UnsupportedOperationException("非対応！");
 		}
 	}
 }

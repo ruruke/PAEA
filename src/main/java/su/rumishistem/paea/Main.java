@@ -33,7 +33,7 @@ public class Main {
 					String host = (String)account.get("HOST");
 					LOG(LOG_TYPE.PROCESS, host + "に照会しています...");
 
-					VerifyToken vt = new VerifyToken((String)account.get("TOKEN"), Software.Misskey, host);
+					VerifyToken vt = new VerifyToken((String)account.get("TOKEN"), Software.value_of((String)account.get("SOFTWARE_NAME")), host);
 					if (vt.verify()) {
 						LOG(LOG_TYPE.PROCESS_END_OK, "");
 						LOG(LOG_TYPE.OK, host + "の" + vt.user_name + "("+vt.user_id+")は有効なﾕｰｻﾞｰです。");
