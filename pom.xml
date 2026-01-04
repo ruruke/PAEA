@@ -28,6 +28,11 @@
 			<artifactId>rumi_java_lib</artifactId>
 			<version>13.86</version>
 		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.50.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
