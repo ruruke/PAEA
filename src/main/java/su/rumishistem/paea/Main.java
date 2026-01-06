@@ -1,24 +1,27 @@
 package su.rumishistem.paea;
 
-import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
 import java.io.IOException;
 import java.sql.SQLException;
 import su.rumishistem.paea.Tool.SQL;
 
 public class Main {
+	public static JobSystem js;
+
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 		SQL.init();
+		js = new JobSystem();
 
 		if (args.length == 0) {
 			print_help();
 			return;
 		}
 
+
 		//引数を
 		switch (args[0]) {
 			case "check":
 				new CheckAccount().check();
-				return;
+				break;
 
 			case "add":
 				new AddAccount().add();
@@ -30,6 +33,8 @@ public class Main {
 				print_help();
 				return;
 		}
+
+		js.start();
 	}
 
 	private static void print_help() {
