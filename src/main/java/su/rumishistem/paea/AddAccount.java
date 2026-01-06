@@ -19,7 +19,35 @@ import su.rumishistem.rumi_java_lib.Ajax.AjaxResult;
 import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 
 public class AddAccount {
-	public void add(Software software) throws IOException, SQLException {
+	private Software software;
+
+	public void question_software() {
+		System.out.println("ｱｶｳﾝﾄを追加します。");
+		System.out.println("ﾘｽﾄからｿﾌﾄｳｪｱを選択してください↓");
+		System.out.println("[1] Misskey");
+		System.out.println("[2] Mastodon");
+		System.out.print("> ");
+
+		String software_select = ListenUserInput.listen();
+		switch (software_select) {
+			case "1":
+				software = Software.Misskey;
+				break;
+			case "2":
+				software = Software.Mastodon;
+				break;
+			default:
+				//ここでGOTOできれば最高なんすけどね
+				question_software();
+				return;
+		}
+	}
+
+	public void add() throws IOException, SQLException {
+		if (software == null) {
+			question_software();
+		}
+
 		//ホスト名
 		System.out.print("ｲﾝｽﾀﾝｽのﾎｽﾄ名は？ > ");
 		String host = ListenUserInput.listen();
@@ -27,7 +55,7 @@ public class AddAccount {
 
 		if (InputChecker.is_host(host) == false) {
 			System.out.println("不正な入力です。");
-			add(software);
+			add();
 		}
 
 		if (software == Software.Misskey) {
