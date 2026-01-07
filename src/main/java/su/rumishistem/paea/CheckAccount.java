@@ -14,6 +14,7 @@ import su.rumishistem.paea.Type.ThrowRunnable;
 public class CheckAccount {
 	public void check() throws SQLException, IOException {
 		List<HashMap<String, Object>> account_list = SQL.run("SELECT * FROM `ACCOUNT`;", new Object[] {});
+		JobSystem js = new JobSystem();
 
 		for (HashMap<String, Object> account:account_list) {
 			Job job = new Job();
@@ -37,7 +38,9 @@ public class CheckAccount {
 				}
 			});
 
-			Main.js.submit(job);
+			js.submit(job);
 		}
+
+		js.start();
 	}
 }

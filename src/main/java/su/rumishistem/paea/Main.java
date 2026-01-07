@@ -5,11 +5,8 @@ import java.sql.SQLException;
 import su.rumishistem.paea.Tool.SQL;
 
 public class Main {
-	public static JobSystem js;
-
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
 		SQL.init();
-		js = new JobSystem();
 
 		if (args.length == 0) {
 			print_help();
@@ -33,8 +30,6 @@ public class Main {
 				print_help();
 				return;
 		}
-
-		js.start();
 	}
 
 	private static void print_help() {
