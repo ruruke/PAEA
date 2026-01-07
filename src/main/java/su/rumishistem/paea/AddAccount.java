@@ -39,8 +39,7 @@ public class AddAccount {
 			default:
 				//ここでGOTOできれば最高なんすけどね
 				question_software();
-				return;
-		}
+        }
 	}
 
 	public void add() throws IOException, SQLException {
