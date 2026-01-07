@@ -10,9 +10,9 @@ import su.rumishistem.rumi_java_lib.Ajax.Ajax;
 import su.rumishistem.rumi_java_lib.Ajax.AjaxResult;
 
 public class VerifyToken {
-	private String token;
-	private Software software;
-	private String host;
+	private final String token;
+	private final Software software;
+	private final String host;
 
 	public boolean status = false;
 	public String user_id;

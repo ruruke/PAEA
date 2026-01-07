@@ -20,23 +20,20 @@ public class CheckAccount {
 			Job job = new Job();
 			String host = (String)account.get("HOST");
 
-			job.set_task(new ThrowRunnable() {
-				@Override
-				public void run() throws Exception {
-					job.set_message(host + "に照会しています...");
+			job.set_task(() -> {
+                job.set_message(host + "に照会しています...");
 
-					try {
-						VerifyToken vt = new VerifyToken((String)account.get("TOKEN"), Software.value_of((String)account.get("SOFTWARE_NAME")), host);
-						if (vt.verify()) {
-							job.set_message(host + "の" + vt.user_name + "("+vt.user_id+")は有効なﾕｰｻﾞｰです。");
-						} else {
-							throw new RuntimeException(host + "は無効なﾕｰｻﾞｰです。");
-						}
-					} catch (ConnectException ex) {
-						throw new RuntimeException(host + "への接続に失敗しました");
-					}
-				}
-			});
+                try {
+                    VerifyToken vt = new VerifyToken((String)account.get("TOKEN"), Software.value_of((String)account.get("SOFTWARE_NAME")), host);
+                    if (vt.verify()) {
+                        job.set_message(host + "の" + vt.user_name + "("+vt.user_id+")は有効なﾕｰｻﾞｰです。");
+                    } else {
+                        throw new RuntimeException(host + "は無効なﾕｰｻﾞｰです。");
+                    }
+                } catch (ConnectException ex) {
+                    throw new RuntimeException(host + "への接続に失敗しました");
+                }
+            });
 
 			js.submit(job);
 		}
