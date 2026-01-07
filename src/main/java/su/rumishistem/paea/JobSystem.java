@@ -1,5 +1,7 @@
 package su.rumishistem.paea;
 
+import static su.rumishistem.rumi_java_lib.LOG_PRINT.Main.LOG;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import su.rumishistem.paea.Type.Job;
 import su.rumishistem.paea.Type.JobStatus;
 import su.rumishistem.paea.Type.JobWorker;
+import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 
 public class JobSystem {
 	private final static int MAX_JOB_WORKER = 10;
@@ -62,7 +65,7 @@ public class JobSystem {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				final int PROGRESS_BAR_SIZE = 45;
+				final int PROGRESS_BAR_SIZE = 64;
 				final int max_job_size = job_list.size();
 
 				try {
@@ -116,18 +119,17 @@ public class JobSystem {
 							clear_display();
 
 							System.out.println("");
+							System.out.println("-----------------------------------------------------");
 							for (Job job:job_list) {
 								if (job.get_status() == JobStatus.Success) {
-									System.out.print("\u001B[42m");
-									System.out.print(job.get_message());
-									System.out.print("\u001B[0m\n");
+									//LOG(LOG_TYPE.OK, "\u001B[32m" + job.get_message() + "\u001B[0m");
+									LOG(LOG_TYPE.OK, job.get_message());
 								} else {
-									System.out.print("\u001B[41m");
-									System.out.print(job.get_exception());
-									System.out.print("\u001B[0m\n");
+									LOG(LOG_TYPE.FAILED, "\u001B[31m" + job.get_exception() + "\u001B[0m");
 								}
 								
 							}
+							System.out.println("-----------------------------------------------------");
 							System.out.println(max_job_size + "個を処理しました。");
 
 							return;
