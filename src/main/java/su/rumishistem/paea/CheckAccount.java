@@ -9,10 +9,9 @@ import su.rumishistem.paea.Tool.SQL;
 import su.rumishistem.paea.Tool.VerifyToken;
 import su.rumishistem.paea.Type.Job;
 import su.rumishistem.paea.Type.Software;
-import su.rumishistem.paea.Type.ThrowRunnable;
 
 public class CheckAccount {
-	public void check() throws SQLException, IOException {
+	public void check() throws SQLException {
 		List<HashMap<String, Object>> account_list = SQL.run("SELECT * FROM `ACCOUNT`;", new Object[] {});
 		JobSystem js = new JobSystem();
 

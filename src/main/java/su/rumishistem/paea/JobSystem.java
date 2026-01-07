@@ -40,21 +40,18 @@ public class JobSystem {
 		int i = 0;
 		for (Job job:job_list) {
 			final int j = i;
-			worker_list[i].submit(new Runnable() {
-				@Override
-				public void run() {
-					job_worker_table[j] = job.get_id();
+			worker_list[i].submit(() -> {
+                job_worker_table[j] = job.get_id();
 
-					boolean success = job.run();
-					if (success) {
-						success_job_size.incrementAndGet();
-					} else {
-						error_job__size.incrementAndGet();
-					}
+                boolean success = job.run();
+                if (success) {
+                    success_job_size.incrementAndGet();
+                } else {
+                    error_job__size.incrementAndGet();
+                }
 
-					job_worker_table[j] = null;
-				}
-			});
+                job_worker_table[j] = null;
+            });
 
 			i += 1;
 			if (i >= MAX_JOB_WORKER) {
@@ -62,85 +59,82 @@ public class JobSystem {
 			}
 		}
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				final int PROGRESS_BAR_SIZE = 64;
-				final int max_job_size = job_list.size();
+		new Thread(() -> {
+            final int PROGRESS_BAR_SIZE = 64;
+            final int max_job_size = job_list.size();
 
-				try {
-					while (true) {
-						int end_job_count = success_job_size.get() + error_job__size.get();
+            try {
+                while (true) {
+                    int end_job_count = success_job_size.get() + error_job__size.get();
 
-						//リセット
-						clear_display();
+                    //リセット
+                    clear_display();
 
-						//進捗バー
-						final int progress = (int)((double) end_job_count / max_job_size * PROGRESS_BAR_SIZE);
-						System.out.print("\u001B[46m");
-						for (int j = 0; j < progress; j++) {
-							System.out.print(" ");
-						}
-						System.out.print("\u001B[47m");
-						for (int j = 0; j < PROGRESS_BAR_SIZE - progress; j++) {
-							System.out.print(" ");
-						}
-						System.out.println("\u001B[0m");
+                    //進捗バー
+                    final int progress = (int)((double) end_job_count / max_job_size * PROGRESS_BAR_SIZE);
+                    System.out.print("\u001B[46m");
+                    for (int j = 0; j < progress; j++) {
+                        System.out.print(" ");
+                    }
+                    System.out.print("\u001B[47m");
+                    for (int j = 0; j < PROGRESS_BAR_SIZE - progress; j++) {
+                        System.out.print(" ");
+                    }
+                    System.out.println("\u001B[0m");
 
-						//ステータス
-						System.out.println("\u001B[42m成功：" + String.format("%03d", success_job_size.get()) + "\u001B[0m");
-						System.out.println("\u001B[41m失敗：" + String.format("%03d", error_job__size.get()) + "\u001B[0m");
+                    //ステータス
+                    System.out.println("\u001B[42m成功：" + String.format("%03d", success_job_size.get()) + "\u001B[0m");
+                    System.out.println("\u001B[41m失敗：" + String.format("%03d", error_job__size.get()) + "\u001B[0m");
 
-						//ジョブワーカーの状態表示
-						for (int i = 0; i < worker_list.length; i++) {
-							JobWorker worker = worker_list[i];
-							String status = switch (worker.get_state()) {
-                                case Idle -> "サボってます";
-                                case Working -> "労働中";
-                            };
+                    //ジョブワーカーの状態表示
+                    for (int i1 = 0; i1 < worker_list.length; i1++) {
+                        JobWorker worker = worker_list[i1];
+                        String status = switch (worker.get_state()) {
+case Idle -> "サボってます";
+case Working -> "労働中";
+};
 
-                            String message = "こゃーん";
-							if (job_worker_table[i] != null) {
-								for (Job job:job_list) {
-									if (job.get_id().equals(job_worker_table[i])) {
-										message = job.get_message();
-										break;
-									}
-								}
-							}
+String message = "こゃーん";
+                        if (job_worker_table[i1] != null) {
+                            for (Job job:job_list) {
+                                if (job.get_id().equals(job_worker_table[i1])) {
+                                    message = job.get_message();
+                                    break;
+                                }
+                            }
+                        }
 
-							System.out.println("["+i+"] " + status + "：" + message);
-						}
+                        System.out.println("["+ i1 +"] " + status + "：" + message);
+                    }
 
-						//ジョブを全て処理したか？
-						if (max_job_size < end_job_count + 1) {
-							pool.shutdown();
-							clear_display();
+                    //ジョブを全て処理したか？
+                    if (max_job_size < end_job_count + 1) {
+                        pool.shutdown();
+                        clear_display();
 
-							System.out.println();
-							System.out.println("-----------------------------------------------------");
-							for (Job job:job_list) {
-								if (job.get_status() == JobStatus.Success) {
-									//LOG(LOG_TYPE.OK, "\u001B[32m" + job.get_message() + "\u001B[0m");
-									LOG(LOG_TYPE.OK, job.get_message());
-								} else {
-									LOG(LOG_TYPE.FAILED, "\u001B[31m" + job.get_exception() + "\u001B[0m");
-								}
-								
-							}
-							System.out.println("-----------------------------------------------------");
-							System.out.println(max_job_size + "個を処理しました。");
+                        System.out.println();
+                        System.out.println("-----------------------------------------------------");
+                        for (Job job:job_list) {
+                            if (job.get_status() == JobStatus.Success) {
+                                //LOG(LOG_TYPE.OK, "\u001B[32m" + job.get_message() + "\u001B[0m");
+                                LOG(LOG_TYPE.OK, job.get_message());
+                            } else {
+                                LOG(LOG_TYPE.FAILED, "\u001B[31m" + job.get_exception() + "\u001B[0m");
+                            }
 
-							return;
-						}
+                        }
+                        System.out.println("-----------------------------------------------------");
+                        System.out.println(max_job_size + "個を処理しました。");
 
-						Thread.sleep(500);
-					}
-				} catch (InterruptedException ex) {
-					//
-				}
-			}
-		}).start();
+                        return;
+                    }
+
+                    Thread.sleep(500);
+                }
+            } catch (InterruptedException ex) {
+                //
+            }
+        }).start();
 	}
 
 	private void clear_display() {
