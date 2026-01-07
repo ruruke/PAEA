@@ -50,9 +50,9 @@ public class AddAccount {
 		//ホスト名
 		System.out.print("ｲﾝｽﾀﾝｽのﾎｽﾄ名は？ > ");
 		String host = ListenUserInput.listen();
-		System.out.println("");
+		System.out.println();
 
-		if (InputChecker.is_host(host) == false) {
+		if (!InputChecker.is_host(host)) {
 			System.out.println("不正な入力です。");
 			add();
 		}
