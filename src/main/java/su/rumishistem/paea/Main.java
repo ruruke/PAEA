@@ -26,7 +26,7 @@ public class Main {
 
 			default:
 				System.out.println("その実行ﾓｰﾄﾞはありません。");
-				System.out.println("");
+				System.out.println();
 				print_help();
 				return;
 		}

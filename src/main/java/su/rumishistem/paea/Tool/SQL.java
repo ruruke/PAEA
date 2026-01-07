@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SQL {
-	private static final String SQL_PATH = "/etc/paea/main.db";
+	private static final String SQL_PATH = System.getProperty("user.home") + "/.config/paea/main.db";
 	private static final String SQL_URL = "jdbc:sqlite:" + SQL_PATH;
 
 	private static Connection connection;
@@ -78,21 +78,18 @@ public class SQL {
 		for (int I = 0; I < param_list.length; I++) {
 			Object Param = param_list[I];
 			//型に寄って動作をかえる
-			if(Param instanceof String){
-				//Stringなら
-				stmt.setString(I + 1, (String)Param);
-			} else if(Param instanceof Integer){
-				//Intなら
-				stmt.setInt(I + 1, (int)Param);
-			} else if (Param instanceof Long) {
-				stmt.setLong(I + 1, (long)Param);
-			} else if (Param instanceof  Boolean) {
-				stmt.setBoolean(I + 1, (boolean)Param);
-			} else if (Param == null) {
-				stmt.setNull(I + 1, Types.NULL);
-			} else {
-				throw new Error(Param.getClass().getSimpleName() + "という型は非対応です");
-			}
+            switch (Param) {
+                case String s ->
+                    //Stringなら
+                        stmt.setString(I + 1, s);
+                case Integer i ->
+                    //Intなら
+                        stmt.setInt(I + 1, (int) Param);
+                case Long l -> stmt.setLong(I + 1, (long) Param);
+                case Boolean b -> stmt.setBoolean(I + 1, (boolean) Param);
+                case null -> stmt.setNull(I + 1, Types.NULL);
+                default -> throw new Error(Param.getClass().getSimpleName() + "という型は非対応です");
+            }
 		}
 	}
 
