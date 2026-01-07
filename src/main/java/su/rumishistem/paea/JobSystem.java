@@ -15,12 +15,12 @@ import su.rumishistem.rumi_java_lib.LOG_PRINT.LOG_TYPE;
 
 public class JobSystem {
 	private final static int MAX_JOB_WORKER = 10;
-	private ExecutorService pool;
-	private JobWorker[] worker_list = new JobWorker[MAX_JOB_WORKER];
-	private List<Job> job_list = new ArrayList<Job>();
-	private AtomicInteger success_job_size = new AtomicInteger(0);
-	private AtomicInteger error_job__size = new AtomicInteger(0);
-	private String[] job_worker_table = new String[MAX_JOB_WORKER];
+	private final ExecutorService pool;
+	private final JobWorker[] worker_list = new JobWorker[MAX_JOB_WORKER];
+	private final List<Job> job_list = new ArrayList<>();
+	private final AtomicInteger success_job_size = new AtomicInteger(0);
+	private final AtomicInteger error_job__size = new AtomicInteger(0);
+	private final String[] job_worker_table = new String[MAX_JOB_WORKER];
 
 	public JobSystem() {
 		pool = Executors.newFixedThreadPool(MAX_JOB_WORKER);
@@ -94,13 +94,12 @@ public class JobSystem {
 						//ジョブワーカーの状態表示
 						for (int i = 0; i < worker_list.length; i++) {
 							JobWorker worker = worker_list[i];
-							String status = "";
-							switch (worker.get_state()) {
-								case Idle: status = "サボってます"; break;
-								case Working: status = "労働中"; break;
-							}
+							String status = switch (worker.get_state()) {
+                                case Idle -> "サボってます";
+                                case Working -> "労働中";
+                            };
 
-							String message = "こゃーん";
+                            String message = "こゃーん";
 							if (job_worker_table[i] != null) {
 								for (Job job:job_list) {
 									if (job.get_id().equals(job_worker_table[i])) {
@@ -118,7 +117,7 @@ public class JobSystem {
 							pool.shutdown();
 							clear_display();
 
-							System.out.println("");
+							System.out.println();
 							System.out.println("-----------------------------------------------------");
 							for (Job job:job_list) {
 								if (job.get_status() == JobStatus.Success) {
